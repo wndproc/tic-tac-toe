@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.messaging.simp.annotation.SubscribeMapping
 import org.springframework.stereotype.Controller
 import org.springframework.stereotype.Service
+import java.util.concurrent.atomic.AtomicInteger
 
 @Controller
 class TicTacToeController {
@@ -21,31 +22,47 @@ class TicTacToeController {
         println(user.name)
     }
 
-    @MessageMapping("/field/create")
-    @SendTo("/topic/field")
-    fun createField(field: Field): Field {
-        fieldService.createField(field)
-        return field
-    }
-
     @SubscribeMapping("/fields")
     fun getFields(): List<Field> {
         return fieldService.getFields()
+    }
+
+    @MessageMapping("/field/create")
+    @SendTo("/topic/field")
+    fun createField(fieldName: FieldName): Field {
+        return fieldService.createField(fieldName.name)
+    }
+
+    @MessageMapping("/field/join")
+    @SendTo("/topic/field")
+    fun joinField(fieldId: FieldId): Field? {
+        return fieldService.join(fieldId.id)
     }
 }
 
 @Service
 class FieldService {
-    private val fields = ArrayList<Field>()
+    private val fields = LinkedHashMap<Int, Field>()
+    private val idCounter = AtomicInteger(1)
 
-    fun createField(field: Field) {
-        fields.add(field)
+    fun createField(fieldName: String): Field {
+        var field = Field(idCounter.getAndIncrement(), fieldName)
+        fields.put(field.id, field)
+        return field
     }
 
     fun getFields(): List<Field> {
-        return fields
+        return fields.values.toList()
+    }
+
+    fun join(id: Int): Field? {
+        var field = fields.get(id)
+        field?.players?.incrementAndGet()
+        return field
     }
 }
 
 class UserName(val name: String)
-class Field(val name: String)
+class FieldName(val name: String)
+class FieldId(val id: Int)
+class Field(val id: Int, val name: String, var players: AtomicInteger = AtomicInteger(1))
