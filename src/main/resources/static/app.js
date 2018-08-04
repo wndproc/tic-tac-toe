@@ -24,12 +24,12 @@ function login() {
 
 function addOrUpdateField(field) {
     if ($("#field_" + field.id).length) {
-        $("#field_" + field.id + "_players").html(field.players);
+        $("#field_" + field.id + "_players").html(field.players.length);
     } else {
         $("#fields").append(
             "<tr id='field_" + field.id + "' fieldId='" + field.id + "'>" +
             "<td>" + field.name + "</td>" +
-            "<td id='field_" + field.id + "_players'>" + field.players + "</td>" +
+            "<td id='field_" + field.id + "_players'>" + field.players.length + "</td>" +
             "</tr>"
         );
         $("#field_" + field.id).click(function () {

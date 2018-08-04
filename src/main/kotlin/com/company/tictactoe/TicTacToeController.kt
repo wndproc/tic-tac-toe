@@ -1,6 +1,7 @@
 package com.company.tictactoe
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.messaging.simp.annotation.SubscribeMapping
@@ -11,15 +12,17 @@ import java.util.concurrent.atomic.AtomicInteger
 @Controller
 class TicTacToeController {
     val fieldService: FieldService
+    val userService: UserService
 
     @Autowired
-    constructor(fieldService: FieldService) {
+    constructor(fieldService: FieldService, userService: UserService) {
         this.fieldService = fieldService
+        this.userService = userService
     }
 
     @MessageMapping("/login")
-    fun login(user: UserName) {
-        println(user.name)
+    fun login(user: UserName, @Header("simpSessionId") sessionId: String) {
+        userService.createUser(sessionId, user.name)
     }
 
     @SubscribeMapping("/fields")
@@ -29,14 +32,14 @@ class TicTacToeController {
 
     @MessageMapping("/field/create")
     @SendTo("/topic/field")
-    fun createField(fieldName: FieldName): Field {
-        return fieldService.createField(fieldName.name)
+    fun createField(fieldName: FieldName, @Header("simpSessionId") sessionId: String): Field {
+        return fieldService.createField(fieldName.name, userService.getUser(sessionId)!!)
     }
 
     @MessageMapping("/field/join")
     @SendTo("/topic/field")
-    fun joinField(fieldId: FieldId): Field? {
-        return fieldService.join(fieldId.id)
+    fun joinField(fieldId: FieldId, @Header("simpSessionId") sessionId: String): Field? {
+        return fieldService.join(fieldId.id, userService.getUser(sessionId)!!)
     }
 }
 
@@ -45,9 +48,9 @@ class FieldService {
     private val fields = LinkedHashMap<Int, Field>()
     private val idCounter = AtomicInteger(1)
 
-    fun createField(fieldName: String): Field {
-        var field = Field(idCounter.getAndIncrement(), fieldName)
-        fields.put(field.id, field)
+    fun createField(fieldName: String, user: User): Field {
+        var field = Field(idCounter.getAndIncrement(), fieldName, user)
+        fields[field.id] = field
         return field
     }
 
@@ -55,14 +58,35 @@ class FieldService {
         return fields.values.toList()
     }
 
-    fun join(id: Int): Field? {
-        var field = fields.get(id)
-        field?.players?.incrementAndGet()
-        return field
+    fun join(id: Int, user: User): Field? {
+        val field = fields[id]
+        if (field != null && !field.players.contains(user)) {
+            field.players.add(user)
+            return field
+        }
+        return null
+    }
+}
+
+@Service
+class UserService {
+    private val users = HashMap<String, User>()
+
+    fun createUser(id: String, name: String) {
+        users[id] = User(id, name)
+    }
+
+    fun getUser(id: String): User? {
+        return users[id]
     }
 }
 
 class UserName(val name: String)
 class FieldName(val name: String)
 class FieldId(val id: Int)
-class Field(val id: Int, val name: String, var players: AtomicInteger = AtomicInteger(1))
+class User(val id: String, val name: String)
+class Field(val id: Int, val name: String, val owner: User, val players: MutableSet<User> = HashSet()) {
+    init {
+        players.add(owner)
+    }
+}
