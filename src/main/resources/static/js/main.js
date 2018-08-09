@@ -1,7 +1,7 @@
-var stompClient = null;
+let stompClient = null;
 
 function connect() {
-    var socket = new SockJS('/tic-tac-toe');
+    const socket = new SockJS('/tic-tac-toe');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function () {
         login();
@@ -17,22 +17,22 @@ function connect() {
 }
 
 function login() {
-    var name = "";
+    let name = "";
     while (name == "") name = prompt("Enter your name");
     stompClient.send("/app/login", {}, JSON.stringify({'name': name}));
 }
 
 function addOrUpdateField(field) {
-    if ($("#field_" + field.id).length) {
-        $("#field_" + field.id + "_players").html(field.players.length);
+    if ($(`#field_${field.id}`).length) {
+        $(`#field_${field.id}_players`).html(field.players.length);
     } else {
         $("#fields").append(
-            "<tr id='field_" + field.id + "' fieldId='" + field.id + "'>" +
-            "<td>" + field.name + "</td>" +
-            "<td id='field_" + field.id + "_players'>" + field.players.length + "</td>" +
-            "</tr>"
+            `<tr id="field_${field.id}" fieldId="${field.id}">` +
+            `<td>${field.name}</td>` +
+            `<td id="field_${field.id}_players">${field.players.length}</td>` +
+            `</tr>`
         );
-        $("#field_" + field.id).click(function () {
+        $(`#field_${field.id}`).click(function () {
             let fieldId = $(this).attr("fieldId");
             joinField(fieldId)
         });
