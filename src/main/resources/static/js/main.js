@@ -1,7 +1,13 @@
 let stompClient = null;
+const sessionId = uuidv4();
 
 function connect() {
-    const socket = new SockJS('/tic-tac-toe');
+    const socket = new SockJS('/tic-tac-toe', {}, {
+        sessionId: function () {
+            return sessionId;
+        }
+    });
+
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function () {
         login();
@@ -10,7 +16,7 @@ function connect() {
                 addOrUpdateField(field)
             })
         });
-        stompClient.subscribe('/topic/field', function (field) {
+        stompClient.subscribe('/topic/fields', function (field) {
             addOrUpdateField(JSON.parse(field.body));
         });
     });
@@ -23,28 +29,33 @@ function login() {
 }
 
 function addOrUpdateField(field) {
+    if (field.owner.sessionId == sessionId) {
+        window.location.href = `/field.html?fieldId=${field.id}&sessionId=${sessionId}`;
+    }
     if ($(`#field_${field.id}`).length) {
         $(`#field_${field.id}_players`).html(field.players.length);
     } else {
         $("#fields").append(
-            `<tr id="field_${field.id}" fieldId="${field.id}">` +
+            `<tr id="field_${field.id}">` +
             `<td>${field.name}</td>` +
             `<td id="field_${field.id}_players">${field.players.length}</td>` +
+            `<td><button id="field_${field.id}_join" fieldId="${field.id}">Join</button></td>` +
             `</tr>`
         );
-        $(`#field_${field.id}`).click(function () {
+        $(`#field_${field.id}_join`).click(function () {
             let fieldId = $(this).attr("fieldId");
-            joinField(fieldId)
+            joinField(fieldId);
+            window.location.href = `/field.html?fieldId=${fieldId}&sessionId=${sessionId}`;
         });
     }
 }
 
 function createField() {
-    stompClient.send("/app/field/create", {}, JSON.stringify({'name': $("#fieldName").val()}));
+    stompClient.send("/app/fields/create", {}, JSON.stringify({'name': $("#fieldName").val()}));
 }
 
 function joinField(fieldId) {
-    stompClient.send("/app/field/join", {}, JSON.stringify({'id': fieldId}));
+    stompClient.send(`/app/fields/${fieldId}/join`);
 }
 
 $(function () {
@@ -55,6 +66,13 @@ $(function () {
         createField();
     });
 });
+
+function uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
 connect();
 

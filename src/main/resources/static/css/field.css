@@ -1,25 +1,13 @@
-.tile {
+.cell {
     height: 50px;
     width: 50px;
-    cursor: pointer;
-
-    padding: 15px;
     margin: 5px;
-    box-sizing: border-box;
-
     color: #fff;
-    font-size: 60px;
+    font-size: 30px;
     text-align: center;
+    background-color: #999;
 }
 
 .free {
-    background-color: #999;
-}
-
-.O-play {
-    background-color: #999;
-}
-
-.X-play {
-    background-color: #999;
+    cursor: pointer;
 }
