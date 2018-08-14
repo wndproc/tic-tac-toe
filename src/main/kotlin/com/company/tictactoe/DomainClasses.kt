@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 const val FIELD_SIZE = 10
 
 class NotFoundException(message: String?) : RuntimeException(message)
-class User(val sessionId: String, val name: String)
+class User(val id: Int, val sessionId: String, val name: String)
 class Field(
         val id: Int,
         val name: String,
@@ -18,7 +18,6 @@ class Field(
         players.add(owner)
     }
 }
-
 class Cell(val type: CellType, val user: User)
 enum class CellType {
     X, O

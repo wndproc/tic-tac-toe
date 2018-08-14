@@ -1,5 +1,6 @@
 let stompClient = null;
 const sessionId = uuidv4();
+let user;
 
 function connect() {
     const socket = new SockJS('/tic-tac-toe', {}, {
@@ -25,11 +26,14 @@ function connect() {
 function login() {
     let name = "";
     while (name == "") name = prompt("Enter your name");
-    stompClient.send("/app/login", {}, JSON.stringify({'name': name}));
+    stompClient.send("/app/users/create", {}, JSON.stringify({'name': name}));
+    stompClient.subscribe(`/user/queue/user`, function (userJson) {
+        user = JSON.parse(userJson.body)
+    });
 }
 
 function addOrUpdateField(field) {
-    if (field.owner.sessionId == sessionId) {
+    if (field.owner.id == user.id) {
         window.location.href = `/field.html?fieldId=${field.id}&sessionId=${sessionId}`;
     }
     if ($(`#field_${field.id}`).length) {

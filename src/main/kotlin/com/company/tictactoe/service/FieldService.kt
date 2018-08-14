@@ -27,13 +27,13 @@ class FieldService {
         return fields[fieldId] ?: throw NotFoundException("Field not found, fieldId: $fieldId")
     }
 
-    fun join(id: Int, user: User): Field? {
+    fun join(id: Int, user: User): Boolean {
         val field = fields[id]
         if (field != null && !field.players.contains(user)) {
             field.players.add(user)
-            return field
+            return true
         }
-        return null
+        return false
     }
 
     fun addMove(fieldId: Int, cellId: Int, cell: Cell) {
