@@ -12,6 +12,15 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function () {
         login();
+    });
+}
+
+function login() {
+    let name = "";
+    while (name == "") name = prompt("Enter your name");
+    stompClient.send("/app/users/create", {}, JSON.stringify({'name': name}));
+    stompClient.subscribe(`/user/queue/user`, function (userJson) {
+        user = JSON.parse(userJson.body);
         stompClient.subscribe('/app/fields', function (fields) {
             JSON.parse(fields.body).forEach(function (field) {
                 addOrUpdateField(field)
@@ -23,26 +32,23 @@ function connect() {
     });
 }
 
-function login() {
-    let name = "";
-    while (name == "") name = prompt("Enter your name");
-    stompClient.send("/app/users/create", {}, JSON.stringify({'name': name}));
-    stompClient.subscribe(`/user/queue/user`, function (userJson) {
-        user = JSON.parse(userJson.body)
-    });
-}
-
 function addOrUpdateField(field) {
-    if (field.owner.id == user.id) {
+    if (field.ownerId == user.id) {
         window.location.href = `/field.html?fieldId=${field.id}&sessionId=${sessionId}`;
     }
     if ($(`#field_${field.id}`).length) {
-        $(`#field_${field.id}_players`).html(field.players.length);
+        if (field.playersNumber) {
+            $(`#field_${field.id}_players`).html(field.playersNumber);
+        }
+        if (field.lastMoveTime) {
+            $(`#field_${field.id}_last_move_time`).html(field.lastMoveTime);
+        }
     } else {
         $("#fields").append(
             `<tr id="field_${field.id}">` +
             `<td>${field.name}</td>` +
-            `<td id="field_${field.id}_players">${field.players.length}</td>` +
+            `<td id="field_${field.id}_players">${field.playersNumber}</td>` +
+            `<td id="field_${field.id}_last_move_time">${field.lastMoveTime ? field.lastMoveTime : ""}</td>` +
             `<td><button id="field_${field.id}_join" fieldId="${field.id}">Join</button></td>` +
             `</tr>`
         );

@@ -39,6 +39,6 @@ class FieldService {
     fun addMove(fieldId: Int, cellId: Int, cell: Cell) {
         var field: Field = fields[fieldId] ?: throw NotFoundException("Field not found, fieldId: $fieldId")
         field.cells[cellId] = cell
-        field.lastMoveDateTime = LocalDateTime.now()
+        field.lastMoveTime = LocalDateTime.now()
     }
 }
