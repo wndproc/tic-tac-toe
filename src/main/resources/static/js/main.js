@@ -18,7 +18,6 @@ function connect() {
 function login() {
     let name = "";
     while (name == "") name = prompt("Enter your name");
-    stompClient.send("/app/users/create", {}, JSON.stringify({'name': name}));
     stompClient.subscribe(`/user/queue/user`, function (userJson) {
         user = JSON.parse(userJson.body);
         stompClient.subscribe('/app/fields', function (fields) {
@@ -30,6 +29,7 @@ function login() {
             addOrUpdateField(JSON.parse(field.body));
         });
     });
+    stompClient.send("/app/users/create", {}, JSON.stringify({'name': name}));
 }
 
 function addOrUpdateField(field) {

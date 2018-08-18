@@ -35,6 +35,11 @@ class FieldController {
         return fieldService.getField(fieldId)
     }
 
+    @SubscribeMapping("/users/{sessionId}")
+    fun getUser(@DestinationVariable sessionId: String): UserTo {
+        return UserTo(userService.getUser(sessionId))
+    }
+
     @MessageMapping("/fields/{fieldId}/move")
     @SendTo("/topic/field/{fieldId}/move")
     fun addMove(move: MoveTo, @DestinationVariable fieldId: Int, @Header("simpSessionId") sessionId: String): MoveTo {
