@@ -1,11 +1,7 @@
 package com.company.tictactoe.service
 
-import com.company.tictactoe.Cell
-import com.company.tictactoe.Field
-import com.company.tictactoe.NotFoundException
-import com.company.tictactoe.User
+import com.company.tictactoe.domain.*
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicInteger
 
 @Service
@@ -36,9 +32,8 @@ class FieldService {
         return false
     }
 
-    fun addMove(fieldId: Int, cellId: Int, cell: Cell) {
+    fun addMove(fieldId: Int, cellId: Int, cellType: CellType): Result {
         var field: Field = fields[fieldId] ?: throw NotFoundException("Field not found, fieldId: $fieldId")
-        field.cells[cellId] = cell
-        field.lastMoveTime = LocalDateTime.now()
+        return field.addMove(cellId, cellType)
     }
 }

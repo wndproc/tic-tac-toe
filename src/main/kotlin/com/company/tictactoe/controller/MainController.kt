@@ -1,7 +1,7 @@
 package com.company.tictactoe.controller
 
-import com.company.tictactoe.FieldTo
-import com.company.tictactoe.User
+import com.company.tictactoe.domain.FieldTo
+import com.company.tictactoe.domain.User
 import com.company.tictactoe.service.FieldService
 import com.company.tictactoe.service.UserService
 import org.springframework.beans.factory.annotation.Autowired

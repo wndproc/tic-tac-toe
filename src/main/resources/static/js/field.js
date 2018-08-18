@@ -27,6 +27,11 @@ function connect() {
         stompClient.subscribe(`/topic/field/${fieldId}/move`, function (moveJson) {
             let move = JSON.parse(moveJson.body);
             fillCell(move.cellId, move.type);
+            if (move.result == 'WIN') {
+                alert("Win!")
+            } else if (move.result == 'DRAW') {
+                alert("Draw")
+            }
         });
     });
 }

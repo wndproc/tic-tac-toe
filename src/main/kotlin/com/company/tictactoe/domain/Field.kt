@@ -1,0 +1,86 @@
+package com.company.tictactoe.domain
+
+import java.lang.Math.max
+import java.lang.Math.min
+import java.time.LocalDateTime
+
+class Field(
+        val id: Int,
+        val name: String,
+        val owner: User,
+        val players: MutableSet<User> = HashSet(),
+        val cells: Array<Array<CellType?>> = Array(FIELD_SIZE) { Array<CellType?>(FIELD_SIZE) { null } },
+        var moveCount: Int = 0,
+        var lastMoveTime: LocalDateTime? = null
+) {
+    init {
+        players.add(owner)
+    }
+
+    @Synchronized
+    fun addMove(cellId: Int, cellType: CellType): Result {
+        if (cellId !in 0..(FIELD_SIZE * FIELD_SIZE - 1)) {
+            throw IllegalArgumentException("Wrong cellId: $cellId")
+        }
+        val row = cellId / FIELD_SIZE
+        val col = cellId % FIELD_SIZE
+        if (cells[row][col] != null) {
+            throw IllegalArgumentException("Cell is not empty, cellId: $cellId")
+        }
+        cells[row][col] = cellType
+        lastMoveTime = LocalDateTime.now()
+        moveCount++
+
+        if (
+                //check row
+                checkWin(row, max(col - WIN_NUMBER + 1, 0), row, min(col + WIN_NUMBER - 1, FIELD_SIZE - 1), 0, 1, cellType) ||
+                //check col
+                checkWin(max(row - WIN_NUMBER + 1, 0), col, min(row + WIN_NUMBER - 1, FIELD_SIZE - 1), col, 1, 0, cellType) ||
+                //check diagonal
+                checkWin(
+                        max(row - WIN_NUMBER + 1, max(row - col, 0)),
+                        max(col - WIN_NUMBER + 1, max(col - row, 0)),
+                        min(row + WIN_NUMBER - 1, min(FIELD_SIZE - 1 + row - col, FIELD_SIZE - 1)),
+                        min(col + WIN_NUMBER - 1, min(FIELD_SIZE - 1 + col - row, FIELD_SIZE - 1)),
+                        1,
+                        1,
+                        cellType
+                ) ||
+                //check anti-diagonal
+                checkWin(
+                        max(row - WIN_NUMBER + 1, max(row - col, 0)),
+                        min(col + WIN_NUMBER - 1, min(FIELD_SIZE - 1 + col - row, FIELD_SIZE - 1)),
+                        min(row + WIN_NUMBER - 1, min(FIELD_SIZE - 1 + row - col, FIELD_SIZE - 1)),
+                        max(col - WIN_NUMBER + 1, max(col - row, 0)),
+                        1,
+                        -1,
+                        cellType
+                )
+        ) return Result.WIN
+
+        if (moveCount == FIELD_SIZE * FIELD_SIZE) {
+            return Result.DRAW
+        }
+
+        return Result.NOTHING
+    }
+
+    private fun checkWin(rowFrom: Int, colFrom: Int, rowTo: Int, colTo: Int, rowInc: Int, colInc: Int, cellType: CellType): Boolean {
+        var row = rowFrom
+        var col = colFrom
+        var counter = 0
+        while (row != rowTo || col != colTo) {
+            if (cells[row][col] == cellType) {
+                counter++
+                if (counter == WIN_NUMBER) {
+                    return true
+                }
+            } else {
+                counter = 0
+            }
+            row += rowInc
+            col += colInc
+        }
+        return false
+    }
+}

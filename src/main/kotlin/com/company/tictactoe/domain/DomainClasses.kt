@@ -1,30 +1,20 @@
-package com.company.tictactoe
+package com.company.tictactoe.domain
 
 import java.time.LocalDateTime
 
 const val FIELD_SIZE = 10
+const val WIN_NUMBER = 5
 
 class NotFoundException(message: String?) : RuntimeException(message)
 
 class User(val id: Int, val sessionId: String, val name: String)
 
-class Field(
-        val id: Int,
-        val name: String,
-        val owner: User,
-        val players: MutableSet<User> = HashSet(),
-        val cells: Array<Cell?> = Array(FIELD_SIZE * FIELD_SIZE) { null },
-        var lastMoveTime: LocalDateTime? = null
-) {
-    init {
-        players.add(owner)
-    }
-}
-
-class Cell(val type: CellType, val user: User)
-
 enum class CellType {
     X, O
+}
+
+enum class Result {
+    NOTHING, WIN, DRAW
 }
 
 class FieldTo(
