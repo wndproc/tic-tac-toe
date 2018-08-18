@@ -1,9 +1,9 @@
 package com.company.tictactoe.controller
 
-import com.company.tictactoe.domain.CellType
 import com.company.tictactoe.domain.Field
-import com.company.tictactoe.domain.FieldTo
-import com.company.tictactoe.domain.Result
+import com.company.tictactoe.dto.FieldTo
+import com.company.tictactoe.dto.MoveTo
+import com.company.tictactoe.dto.UserTo
 import com.company.tictactoe.service.FieldService
 import com.company.tictactoe.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,15 +37,10 @@ class FieldController {
 
     @MessageMapping("/fields/{fieldId}/move")
     @SendTo("/topic/field/{fieldId}/move")
-    fun addMove(move: MoveTo, @DestinationVariable fieldId: Int, @Header("simpSessionId") sessionId: String): MoveTo? {
+    fun addMove(move: MoveTo, @DestinationVariable fieldId: Int, @Header("simpSessionId") sessionId: String): MoveTo {
         var user = userService.getUser(sessionId)
-        if (user != null) {
-            move.result = fieldService.addMove(fieldId, move.cellId, move.type)
-            messagingTemplate.convertAndSend("/topic/fields", FieldTo(fieldId, LocalDateTime.now()))
-            return move
-        }
-        return null
+        var result = fieldService.addMove(fieldId, move.cellId, move.cellType, user)
+        messagingTemplate.convertAndSend("/topic/fields", FieldTo(fieldId, LocalDateTime.now()))
+        return MoveTo(move.cellId, move.cellType, result, UserTo(user))
     }
-
-    class MoveTo(val cellId: Int, val type: CellType, var result : Result?)
 }

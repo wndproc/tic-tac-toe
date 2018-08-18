@@ -2,6 +2,7 @@ const fieldSize = 10;
 let searchParams = new URLSearchParams(window.location.search);
 const fieldId = searchParams.get('fieldId');
 const sessionId = searchParams.get('sessionId');
+let lastMoveUser = null;
 
 $(document).ready(function () {
     createField();
@@ -17,18 +18,20 @@ function connect() {
 
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function () {
-        stompClient.subscribe(`/app/fields/${fieldId}`, function (field) {
-            JSON.parse(field.body).cells.forEach(function (cell, cellId) {
+        stompClient.subscribe(`/app/fields/${fieldId}`, function (fieldJson) {
+            let field = JSON.parse(fieldJson.body);
+            field.cells.forEach(function (cell, cellId) {
                 if (cell) {
-                    fillCell(cellId, cell.type)
+                    fillCell(cellId, cell)
                 }
             })
         });
         stompClient.subscribe(`/topic/field/${fieldId}/move`, function (moveJson) {
             let move = JSON.parse(moveJson.body);
-            fillCell(move.cellId, move.type);
+            fillCell(move.cellId, move.cellType);
+            lastMoveUser = move.user;
             if (move.result == 'WIN') {
-                alert("Win!")
+                alert(`Winner is ${move.user.name}!`)
             } else if (move.result == 'DRAW') {
                 alert("Draw")
             }
@@ -57,10 +60,9 @@ function isCellFree(cellId) {
 function makeMove(event) {
     let cellId = event.data.cellId;
     if (isCellFree(cellId)) {
-        fillCell(cellId, getSelectedType());
         stompClient.send(`/app/fields/${fieldId}/move`, {}, JSON.stringify({
             'cellId': cellId,
-            'type': $("#select").val()
+            'cellType': $("#select").val()
         }));
     }
 }

@@ -1,7 +1,7 @@
 package com.company.tictactoe.controller
 
-import com.company.tictactoe.domain.FieldTo
-import com.company.tictactoe.domain.User
+import com.company.tictactoe.dto.FieldTo
+import com.company.tictactoe.dto.UserTo
 import com.company.tictactoe.service.FieldService
 import com.company.tictactoe.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,9 +47,5 @@ class MainController {
         return if (fieldService.join(fieldId, userService.getUser(sessionId)))
             FieldTo(fieldId, fieldService.getField(fieldId).players.size)
         else null
-    }
-
-    class UserTo(val id: Int?, val name: String) {
-        constructor(user: User) : this(user.id, user.name)
     }
 }

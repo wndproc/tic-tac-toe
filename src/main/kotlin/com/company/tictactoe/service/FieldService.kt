@@ -32,8 +32,8 @@ class FieldService {
         return false
     }
 
-    fun addMove(fieldId: Int, cellId: Int, cellType: CellType): Result {
+    fun addMove(fieldId: Int, cellId: Int, cellType: CellType, user: User): Result {
         var field: Field = fields[fieldId] ?: throw NotFoundException("Field not found, fieldId: $fieldId")
-        return field.addMove(cellId, cellType)
+        return field.addMove(cellId, cellType, user)
     }
 }

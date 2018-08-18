@@ -11,16 +11,23 @@ class Field(
         val players: MutableSet<User> = HashSet(),
         val cells: Array<Array<CellType?>> = Array(FIELD_SIZE) { Array<CellType?>(FIELD_SIZE) { null } },
         var moveCount: Int = 0,
-        var lastMoveTime: LocalDateTime? = null
+        var lastMoveTime: LocalDateTime? = null,
+        var lastMoveUserId: Int? = null
 ) {
     init {
         players.add(owner)
     }
 
     @Synchronized
-    fun addMove(cellId: Int, cellType: CellType): Result {
+    fun addMove(cellId: Int, cellType: CellType, user : User): Result {
         if (cellId !in 0..(FIELD_SIZE * FIELD_SIZE - 1)) {
             throw IllegalArgumentException("Wrong cellId: $cellId")
+        }
+        if (!players.contains(user)) {
+            throw IllegalArgumentException("Player is not joined to field, userId: ${user.id}")
+        }
+        if (user.id == lastMoveUserId) {
+            throw IllegalArgumentException("Player is trying to make multiple moves, userId: ${user.id}")
         }
         val row = cellId / FIELD_SIZE
         val col = cellId % FIELD_SIZE
@@ -29,6 +36,7 @@ class Field(
         }
         cells[row][col] = cellType
         lastMoveTime = LocalDateTime.now()
+        lastMoveUserId = user.id
         moveCount++
 
         if (
