@@ -6,8 +6,16 @@ let lastMoveUserId = null;
 let userId = null;
 
 $(document).ready(function () {
+    if(Math.random() >= 0.5) {
+        $(`#X`).prop('checked', true);
+    } else {
+        $(`#O`).prop('checked', true);
+    }
     createField();
-    connect();
+    fillCell(0, 'X');
+    fillCell(1, 'O');
+    showModal("Draw");
+    //connect();
 });
 
 function connect() {
@@ -36,9 +44,9 @@ function connect() {
             fillCell(move.cellId, move.cellType);
             lastMoveUserId = move.user.id;
             if (move.result == 'WIN') {
-                alert(`Winner is ${move.user.name}!`)
+                showModal(`Winner is ${move.user.name}!`)
             } else if (move.result == 'DRAW') {
-                alert("Draw")
+                showModal("Draw")
             }
         });
     });
@@ -51,7 +59,7 @@ function createField() {
         for (let col = 0; col < fieldSize; col++) {
             let cellId = row * fieldSize + col;
             let tdId = `cell_${cellId}`;
-            $(`#${rowId}`).append(`<td id="${tdId}" class="cell free"></td>`);
+            $(`#${rowId}`).append(`<td id="${tdId}" class="cell free cell-text"></td>`);
             $(`#${tdId}`).click({cellId: cellId}, makeMove);
         }
         $("#field").append("</tr>");
@@ -71,7 +79,7 @@ function makeMove(event) {
     if (isCellFree(cellId)) {
         stompClient.send(`/app/fields/${fieldId}/move`, {}, JSON.stringify({
             'cellId': cellId,
-            'cellType': $("#select").val()
+            'cellType': $('#cellType input:radio:checked').val()
         }));
     }
 }
@@ -81,4 +89,12 @@ function fillCell(cellId, type) {
         $(`#cell_${cellId}`).html(type);
         $(`#cell_${cellId}`).removeClass("free")
     }
+}
+
+function showModal(text) {
+    $(`#modalLabel`).html(text);
+    $('#modal').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
 }

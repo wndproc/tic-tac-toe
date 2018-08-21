@@ -1,13 +1,43 @@
+body {
+    font-family: 'Karla', sans-serif;
+    font-weight: bold;
+}
+
+.field {
+    border-collapse: separate;
+    border-spacing: 5px;
+}
+
 .cell {
     height: 50px;
     width: 50px;
-    margin: 5px;
-    color: #fff;
-    font-size: 30px;
+    color: #2b669a;
+    font-size: 35px;
     text-align: center;
-    background-color: #999;
+    background-color: #ddedf3;
 }
 
 .free {
     cursor: pointer;
+}
+
+.div-x {
+    margin-left:15px;
+}
+
+.div-o {
+    margin-left:9px;
+}
+
+#modalLabel {
+    width : 100%
+}
+
+#modalHeader {
+    border : none;
+    padding-bottom: 0;
+}
+
+#modalFooter {
+    border : none;
 }
