@@ -9,7 +9,7 @@ class Field(
         val name: String,
         val owner: User,
         val players: MutableSet<User> = HashSet(),
-        val cells: Array<Array<CellType?>> = Array(FIELD_SIZE) { Array<CellType?>(FIELD_SIZE) { null } },
+        val cells: Array<Array<Side?>> = Array(FIELD_SIZE) { Array<Side?>(FIELD_SIZE) { null } },
         var moveCount: Int = 0,
         var lastMoveTime: LocalDateTime? = null,
         var lastMoveUserId: Int? = null
@@ -19,7 +19,7 @@ class Field(
     }
 
     @Synchronized
-    fun addMove(cellId: Int, cellType: CellType, user : User): Result {
+    fun addMove(cellId: Int, side: Side, user : User): Result {
         if (cellId !in 0..(FIELD_SIZE * FIELD_SIZE - 1)) {
             throw IllegalArgumentException("Wrong cellId: $cellId")
         }
@@ -34,16 +34,16 @@ class Field(
         if (cells[row][col] != null) {
             throw IllegalArgumentException("Cell is not empty, cellId: $cellId")
         }
-        cells[row][col] = cellType
+        cells[row][col] = side
         lastMoveTime = LocalDateTime.now()
         lastMoveUserId = user.id
         moveCount++
 
         if (
                 //check row
-                checkWin(row, max(col - WIN_NUMBER + 1, 0), row, min(col + WIN_NUMBER - 1, FIELD_SIZE - 1), 0, 1, cellType) ||
+                checkWin(row, max(col - WIN_NUMBER + 1, 0), row, min(col + WIN_NUMBER - 1, FIELD_SIZE - 1), 0, 1, side) ||
                 //check col
-                checkWin(max(row - WIN_NUMBER + 1, 0), col, min(row + WIN_NUMBER - 1, FIELD_SIZE - 1), col, 1, 0, cellType) ||
+                checkWin(max(row - WIN_NUMBER + 1, 0), col, min(row + WIN_NUMBER - 1, FIELD_SIZE - 1), col, 1, 0, side) ||
                 //check diagonal
                 checkWin(
                         max(row - WIN_NUMBER + 1, max(row - col, 0)),
@@ -52,7 +52,7 @@ class Field(
                         min(col + WIN_NUMBER - 1, min(FIELD_SIZE - 1 + col - row, FIELD_SIZE - 1)),
                         1,
                         1,
-                        cellType
+                        side
                 ) ||
                 //check anti-diagonal
                 checkWin(
@@ -62,7 +62,7 @@ class Field(
                         max(col - WIN_NUMBER + 1, max(col - row, 0)),
                         1,
                         -1,
-                        cellType
+                        side
                 )
         ) return Result.WIN
 
@@ -73,12 +73,12 @@ class Field(
         return Result.NOTHING
     }
 
-    private fun checkWin(rowFrom: Int, colFrom: Int, rowTo: Int, colTo: Int, rowInc: Int, colInc: Int, cellType: CellType): Boolean {
+    private fun checkWin(rowFrom: Int, colFrom: Int, rowTo: Int, colTo: Int, rowInc: Int, colInc: Int, side: Side): Boolean {
         var row = rowFrom
         var col = colFrom
         var counter = 0
         while (row != rowTo || col != colTo) {
-            if (cells[row][col] == cellType) {
+            if (cells[row][col] == side) {
                 counter++
                 if (counter == WIN_NUMBER) {
                     return true

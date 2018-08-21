@@ -44,8 +44,8 @@ class FieldController {
     @SendTo("/topic/field/{fieldId}/move")
     fun addMove(move: MoveTo, @DestinationVariable fieldId: Int, @Header("simpSessionId") sessionId: String): MoveTo {
         var user = userService.getUser(sessionId)
-        var result = fieldService.addMove(fieldId, move.cellId, move.cellType, user)
+        var result = fieldService.addMove(fieldId, move.cellId, move.side, user)
         messagingTemplate.convertAndSend("/topic/fields", FieldTo(fieldId, LocalDateTime.now()))
-        return MoveTo(move.cellId, move.cellType, result, UserTo(user))
+        return MoveTo(move.cellId, move.side, result, UserTo(user))
     }
 }

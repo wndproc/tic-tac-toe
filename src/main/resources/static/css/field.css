@@ -1,9 +1,4 @@
-body {
-    font-family: 'Karla', sans-serif;
-    font-weight: bold;
-}
-
-.field {
+.table-field {
     border-collapse: separate;
     border-spacing: 5px;
 }
@@ -17,27 +12,38 @@ body {
     background-color: #ddedf3;
 }
 
-.free {
+.cell-free {
     cursor: pointer;
 }
 
-.div-x {
-    margin-left:15px;
+.label-select {
+    padding-left: 5px;
 }
 
-.div-o {
-    margin-left:9px;
+.navbar-custom {
+    padding-left: 5px;
 }
 
-#modalLabel {
-    width : 100%
+#modal-label {
+    width: 100%
 }
 
-#modalHeader {
-    border : none;
+#modal-header {
+    border: none;
     padding-bottom: 0;
 }
 
-#modalFooter {
-    border : none;
+#modal-footer {
+    border: none;
+}
+
+#alert-placeholder {
+    padding-left: 5px;
+    width: 550px;
+}
+
+#alert-custom {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    margin-bottom: 7px;
 }

@@ -6,15 +6,14 @@ let lastMoveUserId = null;
 let userId = null;
 
 $(document).ready(function () {
-    if(Math.random() >= 0.5) {
-        $(`#X`).prop('checked', true);
+    if (Math.random() >= 0.5) {
+        $(`#select-x`).prop('selected', true);
     } else {
-        $(`#O`).prop('checked', true);
+        $(`#select-o`).prop('selected', true);
     }
     createField();
     fillCell(0, 'X');
     fillCell(1, 'O');
-    showModal("Draw");
     //connect();
 });
 
@@ -33,15 +32,15 @@ function connect() {
         });
         stompClient.subscribe(`/app/fields/${fieldId}`, function (fieldJson) {
             let field = JSON.parse(fieldJson.body);
-            field.cells.forEach(function (cell, cellId) {
-                if (cell) {
-                    fillCell(cellId, cell)
+            field.cells.forEach(function (side, cellId) {
+                if (side) {
+                    fillCell(cellId, side)
                 }
             })
         });
         stompClient.subscribe(`/topic/field/${fieldId}/move`, function (moveJson) {
             let move = JSON.parse(moveJson.body);
-            fillCell(move.cellId, move.cellType);
+            fillCell(move.cellId, move.side);
             lastMoveUserId = move.user.id;
             if (move.result == 'WIN') {
                 showModal(`Winner is ${move.user.name}!`)
@@ -54,47 +53,58 @@ function connect() {
 
 function createField() {
     for (let row = 0; row < fieldSize; row++) {
-        let rowId = `row_${row}`;
-        $("#field").append(`<tr id='${rowId}'>`);
+        $("#field").append(`<tr id="field-row-${row}">`);
         for (let col = 0; col < fieldSize; col++) {
             let cellId = row * fieldSize + col;
-            let tdId = `cell_${cellId}`;
-            $(`#${rowId}`).append(`<td id="${tdId}" class="cell free cell-text"></td>`);
-            $(`#${tdId}`).click({cellId: cellId}, makeMove);
+            $(`#field-row-${row}`).append(`<td id="field-cell-${cellId}" class="cell cell-free cell-text"></td>`);
+            $(`#field-cell-${cellId}`).click({cellId: cellId}, makeMove);
         }
         $("#field").append("</tr>");
     }
 }
 
-function isCellFree(cellId) {
-    return !$(`#cell_${cellId}`).html();
-}
-
 function makeMove(event) {
     if (lastMoveUserId == userId) {
-        alert("You can't make two moves in a row");
+        showAlert("Sorry! You can't make multiple moves in a row");
         return;
     }
     let cellId = event.data.cellId;
     if (isCellFree(cellId)) {
         stompClient.send(`/app/fields/${fieldId}/move`, {}, JSON.stringify({
             'cellId': cellId,
-            'cellType': $('#cellType input:radio:checked').val()
+            'side': $("#select-side").val()
         }));
     }
 }
 
-function fillCell(cellId, type) {
+function fillCell(cellId, side) {
     if (isCellFree(cellId)) {
-        $(`#cell_${cellId}`).html(type);
-        $(`#cell_${cellId}`).removeClass("free")
+        $(`#field-cell-${cellId}`).html(side);
+        $(`#field-cell-${cellId}`).removeClass("cell-free")
     }
 }
 
+function isCellFree(cellId) {
+    return !$(`#field-cell-${cellId}`).html();
+}
+
 function showModal(text) {
-    $(`#modalLabel`).html(text);
+    $(`#modal-label`).html(text);
     $('#modal').modal({
         backdrop: 'static',
         keyboard: false
+    });
+}
+
+function showAlert(text) {
+    $('#alert-placeholder').html(`
+    <div id="alert-custom" class="alert alert-primary fade show" data-alert="alert">
+        <div>${text}</div>
+    </div>
+    `);
+    $("#div-select-side").hide();
+    $(".alert").delay(1500).fadeOut("slow", function () {
+        $(this).remove();
+        $("#div-select-side").show();
     });
 }

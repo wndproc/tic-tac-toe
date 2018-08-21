@@ -1,0 +1,9 @@
+footer {
+    margin-top: 20px;
+}
+
+.footer-p {
+    padding-left: 5px;
+    font-style: italic;
+    color: #e3e7eb;
+}

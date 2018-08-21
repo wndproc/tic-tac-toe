@@ -1,6 +1,6 @@
 package com.company.tictactoe.dto
 
-import com.company.tictactoe.domain.CellType
+import com.company.tictactoe.domain.Side
 import com.company.tictactoe.domain.Field
 import com.company.tictactoe.domain.Result
 import com.company.tictactoe.domain.User
@@ -29,4 +29,4 @@ class FieldTo(
     constructor(id: Int, lastMoveTime: LocalDateTime) : this(id, null, null, null, lastMoveTime)
 }
 
-class MoveTo(val cellId: Int, val cellType: CellType, var result : Result?, var user: UserTo?)
+class MoveTo(val cellId: Int, val side: Side, var result : Result?, var user: UserTo?)

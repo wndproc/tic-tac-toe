@@ -17,65 +17,65 @@ class FieldTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun cellIdIsLessThenZero() {
-        field.addMove(-1, CellType.X, firstPlayer)
+        field.addMove(-1, Side.X, firstPlayer)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun cellIdIsLargerThenFieldSize() {
-        field.addMove(FIELD_SIZE * FIELD_SIZE, CellType.X, firstPlayer)
+        field.addMove(FIELD_SIZE * FIELD_SIZE, Side.X, firstPlayer)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun cellIsNotEmpty() {
-        addMove(0, 0, CellType.X)
-        addMove(0, 0, CellType.X)
+        addMove(0, 0, Side.X)
+        addMove(0, 0, Side.X)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun userIsNotInPlayers() {
-        field.addMove(0, CellType.X, User(3, "sessionId_3", "userName_3"))
+        field.addMove(0, Side.X, User(3, "sessionId_3", "userName_3"))
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun multipleMovesFromOneUser() {
-        field.addMove(0, CellType.X, firstPlayer)
-        field.addMove(1, CellType.X, firstPlayer)
+        field.addMove(0, Side.X, firstPlayer)
+        field.addMove(1, Side.X, firstPlayer)
     }
 
     @Test
     fun winRow() {
-        assertThat(addMove(0, 0, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(0, 1, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(0, 2, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(0, 3, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(0, 4, CellType.X)).isEqualTo(Result.WIN)
+        assertThat(addMove(0, 0, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(0, 1, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(0, 2, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(0, 3, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(0, 4, Side.X)).isEqualTo(Result.WIN)
     }
 
     @Test
     fun winColumn() {
-        assertThat(addMove(0, 0, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(1, 0, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(2, 0, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(3, 0, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(4, 0, CellType.X)).isEqualTo(Result.WIN)
+        assertThat(addMove(0, 0, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(1, 0, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(2, 0, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(3, 0, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(4, 0, Side.X)).isEqualTo(Result.WIN)
     }
 
     @Test
     fun winDiagonal() {
-        assertThat(addMove(0, 0, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(1, 1, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(2, 2, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(3, 3, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(4, 4, CellType.X)).isEqualTo(Result.WIN)
+        assertThat(addMove(0, 0, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(1, 1, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(2, 2, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(3, 3, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(4, 4, Side.X)).isEqualTo(Result.WIN)
     }
 
     @Test
     fun winAntidiagonal() {
-        assertThat(addMove(0,9, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(1,8, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(2,7, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(3,6, CellType.X)).isEqualTo(Result.NOTHING)
-        assertThat(addMove(4,5, CellType.X)).isEqualTo(Result.WIN)
+        assertThat(addMove(0,9, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(1,8, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(2,7, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(3,6, Side.X)).isEqualTo(Result.NOTHING)
+        assertThat(addMove(4,5, Side.X)).isEqualTo(Result.WIN)
     }
 
     @Test
@@ -107,11 +107,11 @@ class FieldTest {
         return field
     }
 
-    private fun addMove(row: Int, col: Int, cellType: CellType) : Result {
+    private fun addMove(row: Int, col: Int, side: Side) : Result {
         firstPlayerTurn = !firstPlayerTurn
-        return field.addMove(getCellId(row, col), cellType, if (firstPlayerTurn) firstPlayer else secondPlayer)
+        return field.addMove(getCellId(row, col), side, if (firstPlayerTurn) firstPlayer else secondPlayer)
     }
 
     private fun getCellId(row: Int, col: Int) = row * FIELD_SIZE + col
-    private fun getCellType(cross: Boolean) = if (cross) CellType.X else CellType.O
+    private fun getCellType(cross: Boolean) = if (cross) Side.X else Side.O
 }

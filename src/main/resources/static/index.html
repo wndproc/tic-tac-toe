@@ -2,32 +2,38 @@
 <html>
 <head>
     <title>Tic tac toe</title>
-    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/main.css" rel="stylesheet">
-    <script src="/webjars/jquery/jquery.min.js"></script>
-    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
-    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet"/>
+    <script src="webjars/jquery/jquery.min.js"></script>
+    <script src="webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="webjars/bootstrap/js/bootstrap.bundle.js"></script>
     <script src="js/main.js"></script>
 </head>
 <body>
-<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
-    enabled. Please enable
-    Javascript and reload this page!</h2></noscript>
-<div id="main-content" class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <form class="form-inline">
-                <div class="form-group">
-                    <label for="fieldName">Field name</label>
-                    <input type="text" id="fieldName" class="form-control" placeholder="Field name...">
+<div id="navbar" class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
+    <div class="container">
+        <div class="navbar-brand">Tic tac toe game</div>
+    </div>
+</div>
+<div class="container">
+    <div class="row mb-3">
+        <form class="col-md-12">
+            <div class="form-row align-items-center">
+                <div class="col-md-2 my-1">
+                    <label class="sr-only" for="fieldName">Field name</label>
+                    <input type="text" class="form-control" id="fieldName" placeholder="Field name">
                 </div>
-                <button id="createField" class="btn btn-default" type="submit">Create field</button>
-            </form>
-        </div>
+                <div class="col-auto my-1">
+                    <button id="create-field-btn" class="btn btn-primary" type="submit">Create field</button>
+                </div>
+            </div>
+        </form>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <table id="conversation" class="table table-striped">
+            <table id="table-fields" class="table table-hover">
                 <thead>
                 <tr>
                     <th>Field name</th>
@@ -35,11 +41,42 @@
                     <th>Last move time</th>
                 </tr>
                 </thead>
-                <tbody id="fields">
+                <tbody id="table-fields-body">
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form class="needs-validation" onsubmit="joinGame()">
+                    <div id="modal-header" class="modal-header">
+                        <h5 class="modal-title text-center">Enter your name</h5>
+                    </div>
+                    <div id="modal-body" class="modal-body">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="player-name" required>
+                        </div>
+                    </div>
+                    <div id="modal-footer" class="modal-footer">
+                        <button id="join-game-btn" type="submit" class="btn btn-primary">
+                            Join the game
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="footer-p">Made by Arseniy Merzlyakov especially for JetBrains. 2018</p>
+            </div>
+        </div>
+    </footer>
 </div>
 </body>
 </html>

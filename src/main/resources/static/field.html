@@ -8,7 +8,7 @@
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/field.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
+    <link href="css/common.css" rel="stylesheet"/>
     <script src="webjars/jquery/jquery.min.js"></script>
     <script src="webjars/sockjs-client/sockjs.min.js"></script>
     <script src="webjars/stomp-websocket/stomp.min.js"></script>
@@ -16,32 +16,55 @@
     <script type="text/javascript" src="js/field.js"></script>
 </head>
 <body>
-<div class="container">
-    <div id="cellType">
-        <div class="form-check form-check-inline div-x">
-            <input id="X" class="form-check-input" type="radio" name="inlineRadioOptions" value="X">
-            <label class="form-check-label" for="X">X</label>
-        </div>
-        <div class="form-check form-check-inline div-o">
-            <input id="O" class="form-check-input" type="radio" name="inlineRadioOptions" value="O">
-            <label class="form-check-label" for="O">O</label>
-        </div>
+<div id="navbar" class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
+    <div class="container">
+        <div class="navbar-brand navbar-custom">Tic tac toe game</div>
     </div>
-    <table id="field" class="field">
-    </table>
 </div>
-<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div id="modalHeader" class="modal-header">
-                <h2 id="modalLabel" class="modal-title text-center">Draw!</h2>
-            </div>
-            <div id="modalFooter" class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="window.location.replace('index.html')">Go back
-                </button>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="alert-placeholder"></div>
+        </div>
+    </div>
+
+    <div id="div-select-side" class="form form-inline mb-2">
+        <label class="label-select mr-2" for="select-side">Choose your side:</label>
+        <select id="select-side" class="form-control">
+            <option id="select-x">X</option>
+            <option id="select-o">O</option>
+        </select>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table id="field" class="table-field">
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div id="modal-header" class="modal-header">
+                    <h2 id="modal-label" class="modal-title text-center"></h2>
+                </div>
+                <div id="modal-footer" class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="window.location.replace('index.html')">
+                        Go back
+                    </button>
+                </div>
             </div>
         </div>
     </div>
+
+    <footer id="footer">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="footer-p">Made by Arseniy Merzlyakov especially for JetBrains. 2018</p>
+            </div>
+        </div>
+    </footer>
 </div>
 </body>
 </html>

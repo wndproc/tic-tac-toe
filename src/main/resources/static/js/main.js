@@ -11,13 +11,13 @@ function connect() {
 
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function () {
-        login();
     });
 }
 
-function login() {
-    let name = "";
-    while (name == "") name = prompt("Enter your name");
+function joinGame() {
+    let name = $("#player-name").val();
+    $('#modal').modal('toggle');
+
     stompClient.subscribe(`/user/queue/user`, function (userJson) {
         user = JSON.parse(userJson.body);
         stompClient.subscribe('/app/fields', function (fields) {
@@ -36,26 +36,25 @@ function addOrUpdateField(field) {
     if (field.ownerId == user.id) {
         window.location.href = `/field.html?fieldId=${field.id}&sessionId=${sessionId}`;
     }
-    if ($(`#field_${field.id}`).length) {
+    if ($(`#table-fields-row-${field.id}`).length) {
         if (field.playersNumber) {
-            $(`#field_${field.id}_players`).html(field.playersNumber);
+            $(`#table-fields-row-${field.id} .players`).html(field.playersNumber);
         }
         if (field.lastMoveTime) {
-            $(`#field_${field.id}_last_move_time`).html(field.lastMoveTime);
+            $(`#table-fields-row-${field.id} .last-move-time`).html(field.lastMoveTime);
         }
     } else {
-        $("#fields").append(
-            `<tr id="field_${field.id}">` +
+        $("#table-fields-body").append(
+            `<tr id="table-fields-row-${field.id} fieldId="${field.id} class="table-fields-row" ">` +
             `<td>${field.name}</td>` +
-            `<td id="field_${field.id}_players">${field.playersNumber}</td>` +
-            `<td id="field_${field.id}_last_move_time">${field.lastMoveTime ? field.lastMoveTime : ""}</td>` +
-            `<td><button id="field_${field.id}_join" fieldId="${field.id}">Join</button></td>` +
+            `<td class="players">${field.playersNumber}</td>` +
+            `<td class="last-move-time">${field.lastMoveTime ? field.lastMoveTime : ""}</td>` +
             `</tr>`
         );
-        $(`#field_${field.id}_join`).click(function () {
+        $(`#table-fields-row-${field.id}`).click(function () {
             let fieldId = $(this).attr("fieldId");
             joinField(fieldId);
-            window.location.href = `/field.html?fieldId=${fieldId}&sessionId=${sessionId}`;
+            window.location.href = `field.html?fieldId=${fieldId}&sessionId=${sessionId}`;
         });
     }
 }
@@ -68,15 +67,6 @@ function joinField(fieldId) {
     stompClient.send(`/app/fields/${fieldId}/join`);
 }
 
-$(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
-    $("#createField").click(function () {
-        createField();
-    });
-});
-
 function uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -84,5 +74,27 @@ function uuidv4() {
     });
 }
 
-connect();
+$(function () {
+    $("form").on('submit', function (e) {
+        e.preventDefault();
+    });
+    $("#create-field-btn").click(function () {
+        createField();
+    });
+});
 
+$(document).ready(function () {
+    user = {id: 2}
+    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
+    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
+    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
+    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
+    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
+
+    $('#modal').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+});
+
+//connect();

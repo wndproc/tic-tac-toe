@@ -7,7 +7,7 @@ class NotFoundException(message: String?) : RuntimeException(message)
 
 data class User(val id: Int, val sessionId: String, val name: String)
 
-enum class CellType {
+enum class Side {
     X, O
 }
 
