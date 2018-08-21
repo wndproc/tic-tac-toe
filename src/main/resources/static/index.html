@@ -19,14 +19,13 @@
 </div>
 <div class="container">
     <div class="row mb-3">
-        <form class="col-md-12">
+        <form class="col-md-12 needs-validation">
             <div class="form-row align-items-center">
                 <div class="col-md-2 my-1">
-                    <label class="sr-only" for="fieldName">Field name</label>
-                    <input type="text" class="form-control" id="fieldName" placeholder="Field name">
+                    <input type="text" class="form-control" id="input-field-name" placeholder="Field name" required>
                 </div>
                 <div class="col-auto my-1">
-                    <button id="create-field-btn" class="btn btn-primary" type="submit">Create field</button>
+                    <button class="btn btn-primary" type="submit" onsubmit="createField()">Create field</button>
                 </div>
             </div>
         </form>

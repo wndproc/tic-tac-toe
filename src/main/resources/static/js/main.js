@@ -34,8 +34,9 @@ function joinGame() {
 
 function addOrUpdateField(field) {
     if (field.ownerId == user.id) {
-        window.location.href = `/field.html?fieldId=${field.id}&sessionId=${sessionId}`;
+        window.location.href = `field.html?fieldId=${field.id}&sessionId=${sessionId}`;
     }
+
     if ($(`#table-fields-row-${field.id}`).length) {
         if (field.playersNumber) {
             $(`#table-fields-row-${field.id} .players`).html(field.playersNumber);
@@ -45,7 +46,7 @@ function addOrUpdateField(field) {
         }
     } else {
         $("#table-fields-body").append(
-            `<tr id="table-fields-row-${field.id} fieldId="${field.id} class="table-fields-row" ">` +
+            `<tr id="table-fields-row-${field.id} fieldId="${field.id}" class="table-fields-row">` +
             `<td>${field.name}</td>` +
             `<td class="players">${field.playersNumber}</td>` +
             `<td class="last-move-time">${field.lastMoveTime ? field.lastMoveTime : ""}</td>` +
@@ -60,7 +61,7 @@ function addOrUpdateField(field) {
 }
 
 function createField() {
-    stompClient.send("/app/fields/create", {}, JSON.stringify({'name': $("#fieldName").val()}));
+    stompClient.send("/app/fields/create", {}, JSON.stringify({'name': $("#input-field-name").val()}));
 }
 
 function joinField(fieldId) {
@@ -74,27 +75,10 @@ function uuidv4() {
     });
 }
 
-$(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
-    $("#create-field-btn").click(function () {
-        createField();
-    });
-});
-
+connect();
 $(document).ready(function () {
-    user = {id: 2}
-    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
-    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
-    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
-    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
-    addOrUpdateField({name: "fieldName", ownerId: 1, id: 1, playersNumber: 10, lastMoveTime: '2018-10-12'})
-
     $('#modal').modal({
         backdrop: 'static',
         keyboard: false
     });
 });
-
-//connect();
