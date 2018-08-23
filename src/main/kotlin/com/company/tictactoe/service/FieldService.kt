@@ -5,11 +5,12 @@ import com.company.tictactoe.domain.Player
 import com.company.tictactoe.domain.Result
 import com.company.tictactoe.domain.Side
 import org.springframework.stereotype.Service
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 @Service
 class FieldService {
-    private val fields = LinkedHashMap<Int, Field>()
+    private val fields = ConcurrentHashMap<Int, Field>()
     private val idCounter = AtomicInteger(1)
 
     fun createField(fieldName: String, player: Player): Field {
@@ -19,7 +20,7 @@ class FieldService {
     }
 
     fun getFields(): List<Field> {
-        return fields.values.toList()
+        return fields.values.toList().sortedBy { it.id }
     }
 
     fun getField(fieldId : Int): Field? {
@@ -30,7 +31,7 @@ class FieldService {
         fields.remove(fieldId)
     }
 
-    fun join(id: Int, player: Player): Boolean {
+    fun addPlayer(id: Int, player: Player): Boolean {
         val field = fields[id]
         if (field != null && !field.players.contains(player)) {
             field.players.add(player)

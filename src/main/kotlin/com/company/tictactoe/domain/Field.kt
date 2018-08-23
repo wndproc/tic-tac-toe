@@ -3,12 +3,13 @@ package com.company.tictactoe.domain
 import java.lang.Math.max
 import java.lang.Math.min
 import java.time.LocalDateTime
+import java.util.concurrent.ConcurrentHashMap
 
 class Field(
         val id: Int,
         val name: String,
         val creator: Player,
-        val players: MutableSet<Player> = HashSet(),
+        val players: MutableSet<Player> = ConcurrentHashMap.newKeySet(),
         val cells: Array<Array<Side?>> = Array(FIELD_SIZE) { Array<Side?>(FIELD_SIZE) { null } },
         var movesCount: Int = 0,
         var lastMoveTime: LocalDateTime? = null,

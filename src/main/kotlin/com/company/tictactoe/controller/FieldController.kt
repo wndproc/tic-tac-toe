@@ -42,9 +42,28 @@ class FieldController {
     @MessageMapping("/fields/{fieldId}/join")
     @SendTo("/topic/fields")
     fun joinField(@DestinationVariable fieldId: Int, @Header("simpSessionId") sessionId: String): Message<FieldInfoTo> {
-        return if (fieldService.join(fieldId, playersService.findPlayer(sessionId)!!))
+        return if (fieldService.addPlayer(fieldId, playersService.findPlayer(sessionId)!!))
             Message(FieldInfoTo(fieldId, playersNumber = fieldService.getField(fieldId)!!.players.size))
         else Message()
+    }
+
+    @MessageMapping("/fields/{fieldId}/leave")
+    @SendTo("/topic/fields")
+    fun leaveField(@DestinationVariable fieldId: Int, @Header("simpSessionId") sessionId: String): Message<FieldInfoTo> {
+        var player = playersService.findPlayer(sessionId)
+        if (player != null) {
+            val field = fieldService.getField(fieldId)
+            if (field != null) {
+                field.players.remove(player)
+                val playersNumber = field.players.size
+                if (playersNumber == 0) {
+                    deleteField(fieldId)
+                    return Message()
+                }
+                return Message(FieldInfoTo(fieldId, playersNumber = playersNumber))
+            }
+        }
+        return Message()
     }
 
     @SubscribeMapping("/fields/{fieldId}")

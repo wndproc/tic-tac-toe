@@ -3,12 +3,7 @@ let lastPlayerId = null;
 let playerId = null;
 const fieldId = new URLSearchParams(window.location.search).get('fieldId');
 const sessionId = getSessionId();
-
-$(document).ready(function () {
-    chooseRandomSide();
-    createField();
-    connect();
-});
+let gameFinished = false;
 
 function connect() {
     if (sessionId) {
@@ -58,8 +53,10 @@ function addMove(message) {
         fillCell(move.cellId, move.side);
         lastPlayerId = move.player.id;
         if (move.result == 'WIN') {
+            gameFinished = true;
             showGameFinishedModal(`Winner is ${move.player.name}!`)
         } else if (move.result == 'DRAW') {
+            gameFinished = true;
             showGameFinishedModal("Draw")
         }
     }
@@ -87,3 +84,18 @@ function getSessionId() {
     showErrorModal("You should visit main page to create account before you could join to the game.");
     return null;
 }
+
+$(document).ready(function () {
+    chooseRandomSide();
+    createField();
+    connect();
+});
+
+$(window).bind(
+    "beforeunload",
+    function() {
+        if (!gameFinished) {
+            stompClient.send(`/app/fields/${fieldId}/leave`, {}, {});
+        }
+    }
+);
