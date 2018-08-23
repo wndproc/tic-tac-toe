@@ -41,7 +41,10 @@ class FieldController {
 
     @MessageMapping("/fields/{fieldId}/join")
     @SendTo("/topic/fields")
-    fun joinField(@DestinationVariable fieldId: Int, @Header("simpSessionId") sessionId: String): Message<FieldInfoTo> {
+    fun joinField(
+            @DestinationVariable fieldId: Int,
+            @Header("simpSessionId") sessionId: String
+    ): Message<FieldInfoTo> {
         return if (fieldService.addPlayer(fieldId, playersService.findPlayer(sessionId)!!))
             Message(FieldInfoTo(fieldId, playersNumber = fieldService.getField(fieldId)!!.players.size))
         else Message()
@@ -49,7 +52,10 @@ class FieldController {
 
     @MessageMapping("/fields/{fieldId}/leave")
     @SendTo("/topic/fields")
-    fun leaveField(@DestinationVariable fieldId: Int, @Header("simpSessionId") sessionId: String): Message<FieldInfoTo> {
+    fun leaveField(
+            @DestinationVariable fieldId: Int,
+            @Header("simpSessionId") sessionId: String
+    ): Message<FieldInfoTo> {
         var player = playersService.findPlayer(sessionId)
         if (player != null) {
             val field = fieldService.getField(fieldId)
@@ -74,10 +80,17 @@ class FieldController {
 
     @MessageMapping("/fields/{fieldId}/move")
     @SendTo("/topic/field/{fieldId}/move")
-    fun addMove(move: MoveTo, @DestinationVariable fieldId: Int, @Header("simpSessionId") sessionId: String): Message<MoveTo> {
+    fun addMove(
+            move: MoveTo,
+            @DestinationVariable fieldId: Int,
+            @Header("simpSessionId") sessionId: String
+    ): Message<MoveTo> {
         var player = playersService.findPlayer(sessionId)!!
         var result = fieldService.addMove(fieldId, move.cellId, move.side, player)
-        messagingTemplate.convertAndSend("/topic/fields", Message(FieldInfoTo(fieldId, lastMoveTime = LocalDateTime.now())))
+        messagingTemplate.convertAndSend(
+                "/topic/fields",
+                Message(FieldInfoTo(fieldId, lastMoveTime = LocalDateTime.now()))
+        )
         if (result != NOTHING) {
             deleteField(fieldId)
         }

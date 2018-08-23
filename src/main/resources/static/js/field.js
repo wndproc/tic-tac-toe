@@ -15,6 +15,7 @@ function connect() {
 
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function () {
+            stompClient.send(`/app/fields/${fieldId}/join`);
             stompClient.subscribe(`/app/players/${sessionId}`, setPlayer);
             stompClient.subscribe(`/app/fields/${fieldId}`, setField);
             stompClient.subscribe(`/topic/field/${fieldId}/move`, addMove);

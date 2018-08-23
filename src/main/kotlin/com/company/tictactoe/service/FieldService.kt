@@ -23,11 +23,11 @@ class FieldService {
         return fields.values.toList().sortedBy { it.id }
     }
 
-    fun getField(fieldId : Int): Field? {
+    fun getField(fieldId: Int): Field? {
         return fields[fieldId]
     }
 
-    fun deleteField(fieldId : Int) {
+    fun deleteField(fieldId: Int) {
         fields.remove(fieldId)
     }
 

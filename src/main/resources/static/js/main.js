@@ -78,10 +78,6 @@ function createField() {
     stompClient.send("/app/fields/create", {}, JSON.stringify({'name': getFieldName()}));
 }
 
-function joinField(fieldId) {
-    stompClient.send(`/app/fields/${fieldId}/join`);
-}
-
 $(document).ready(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();

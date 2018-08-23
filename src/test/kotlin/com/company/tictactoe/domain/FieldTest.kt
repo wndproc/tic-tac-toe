@@ -79,6 +79,23 @@ class FieldTest {
     }
 
     @Test
+    fun winMultipleMoves() {
+           assertThat(addMove(2, 4, Side.O)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(3, 4, Side.X)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(4, 4, Side.O)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(4, 3, Side.X)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(4, 5, Side.O)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(3, 3, Side.X)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(3, 5, Side.O)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(2, 2, Side.X)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(4, 2, Side.O)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(2, 3, Side.X)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(1, 3, Side.X)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(5, 3, Side.O)).isEqualTo(Result.NOTHING)
+           assertThat(addMove(0, 3, Side.X)).isEqualTo(Result.WIN)
+    }
+
+    @Test
     fun draw() {
         var cross = true
         for (row in 0 until FIELD_SIZE) {

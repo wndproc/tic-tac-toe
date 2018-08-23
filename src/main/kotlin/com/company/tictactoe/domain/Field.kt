@@ -20,7 +20,7 @@ class Field(
     }
 
     @Synchronized
-    fun addMove(cellId: Int, side: Side, player : Player): Result {
+    fun addMove(cellId: Int, side: Side, player: Player): Result {
         if (cellId !in 0..(FIELD_SIZE * FIELD_SIZE - 1)) {
             throw IllegalArgumentException("Wrong cellId: $cellId")
         }
@@ -78,7 +78,7 @@ class Field(
         var row = rowFrom
         var col = colFrom
         var counter = 0
-        while (row != rowTo || col != colTo) {
+        while (row != rowTo + rowInc || col != colTo + colInc) {
             if (cells[row][col] == side) {
                 counter++
                 if (counter == WIN_NUMBER) {

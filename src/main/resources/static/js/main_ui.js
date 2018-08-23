@@ -16,7 +16,6 @@ function addOrUpdateField(field) {
         );
         $(`#table-fields-row-${field.id}`).click(function () {
             let fieldId = $(this).attr("fieldId");
-            joinField(fieldId);
             window.location.href = `field.html?fieldId=${fieldId}`;
         });
     }
