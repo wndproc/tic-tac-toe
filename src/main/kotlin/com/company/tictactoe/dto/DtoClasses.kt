@@ -1,32 +1,42 @@
 package com.company.tictactoe.dto
 
-import com.company.tictactoe.domain.Side
-import com.company.tictactoe.domain.Field
-import com.company.tictactoe.domain.Result
-import com.company.tictactoe.domain.User
+import com.company.tictactoe.domain.*
 import java.time.LocalDateTime
 
-class UserTo(val id: Int?, val name: String) {
-    constructor(user: User) : this(user.id, user.name)
+class PlayerTo(val id: Int? = null, val name: String) {
+    constructor(player: Player) : this(player.id, player.name)
 }
 
-class FieldTo(
+class FieldInfoTo(
         val id: Int?,
-        val name: String?,
-        val ownerId: Int?,
-        val playersNumber: Int?,
-        val lastMoveTime: LocalDateTime?
+        val name: String? = null,
+        val creatorId: Int? = null,
+        val playersNumber: Int? = null,
+        val lastMoveTime: LocalDateTime? = null
 ) {
     constructor(field: Field) : this(
             field.id,
             field.name,
-            field.owner.id,
+            field.creator.id,
             field.players.size,
             field.lastMoveTime
     )
-
-    constructor(id: Int, playersNumber: Int) : this(id, null, null, playersNumber, null)
-    constructor(id: Int, lastMoveTime: LocalDateTime) : this(id, null, null, null, lastMoveTime)
 }
 
-class MoveTo(val cellId: Int, val side: Side, var result : Result?, var user: UserTo?)
+class FieldCellsTo(
+        val id: Int,
+        val name: String,
+        val cells: Array<Array<Side?>> = Array(FIELD_SIZE) { Array<Side?>(FIELD_SIZE) { null } },
+        var lastPlayerId: Int? = null
+) {
+    constructor(field: Field) : this(
+            field.id,
+            field.name,
+            field.cells,
+            field.lastPlayerId
+    )
+}
+
+class MoveTo(val cellId: Int, val side: Side, var result: Result?, var player: PlayerTo?)
+
+class Message<T>(val payload: T? = null)

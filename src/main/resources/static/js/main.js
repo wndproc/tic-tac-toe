@@ -1,6 +1,18 @@
 let stompClient = null;
-const sessionId = uuidv4();
-let user;
+let isNewSession = false;
+const sessionId = getSessionId();
+let player;
+
+function getSessionId() {
+    let savedSessionId = sessionStorage.getItem("sessionId");
+    if (savedSessionId) {
+       return savedSessionId;
+    }
+    let uuid = uuidv4();
+    sessionStorage.setItem("sessionId", uuid);
+    isNewSession = true;
+    return uuid;
+}
 
 function connect() {
     const socket = new SockJS('/tic-tac-toe', {}, {
@@ -10,75 +22,69 @@ function connect() {
     });
 
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function () {
-    });
+    stompClient.connect({}, onConnect);
 }
 
-function joinGame() {
-    let name = $("#player-name").val();
-    $('#modal').modal('toggle');
+function onConnect() {
+    if (isNewSession) {
+        showCreatePlayerModal();
+    } else {
+        stompClient.subscribe(`/app/players/${sessionId}`, function (message) {
+            player = getMessagePayload(message);
+            if (!player) {
+                showCreatePlayerModal();
+            }
+        });
+    }
 
-    stompClient.subscribe(`/user/queue/user`, function (userJson) {
-        user = JSON.parse(userJson.body);
-        stompClient.subscribe('/app/fields', function (fields) {
-            JSON.parse(fields.body).forEach(function (field) {
+    stompClient.subscribe('/app/fields', function (message) {
+        let fields = getMessagePayload(message);
+        if (fields) {
+            fields.forEach(function (field) {
                 addOrUpdateField(field)
             })
-        });
-        stompClient.subscribe('/topic/fields', function (field) {
-            addOrUpdateField(JSON.parse(field.body));
-        });
+        }
     });
-    stompClient.send("/app/users/create", {}, JSON.stringify({'name': name}));
+    stompClient.subscribe('/topic/fields', function (message) {
+        let field = getMessagePayload(message);
+        if (field) {
+            if (player && player.id == field.creatorId) {
+                window.location.href = `field.html?fieldId=${field.id}`;
+            } else {
+                addOrUpdateField(field);
+            }
+        }
+    });
+    stompClient.subscribe('/topic/fields/delete', function (message) {
+        let field = getMessagePayload(message);
+        if (field) {
+           deleteField(field.id)
+        }
+    });
 }
 
-function addOrUpdateField(field) {
-    if (field.ownerId == user.id) {
-        window.location.href = `field.html?fieldId=${field.id}&sessionId=${sessionId}`;
-    }
-
-    if ($(`#table-fields-row-${field.id}`).length) {
-        if (field.playersNumber) {
-            $(`#table-fields-row-${field.id} .players`).html(field.playersNumber);
+function createPlayer() {
+    hideCreatePlayerModal();
+    stompClient.subscribe(`/user/queue/player`, function (message) {
+        player = getMessagePayload(message);
+        if (!player) {
+            showErrorModal();
         }
-        if (field.lastMoveTime) {
-            $(`#table-fields-row-${field.id} .last-move-time`).html(field.lastMoveTime);
-        }
-    } else {
-        $("#table-fields-body").append(
-            `<tr id="table-fields-row-${field.id} fieldId="${field.id}" class="table-fields-row">` +
-            `<td>${field.name}</td>` +
-            `<td class="players">${field.playersNumber}</td>` +
-            `<td class="last-move-time">${field.lastMoveTime ? field.lastMoveTime : ""}</td>` +
-            `</tr>`
-        );
-        $(`#table-fields-row-${field.id}`).click(function () {
-            let fieldId = $(this).attr("fieldId");
-            joinField(fieldId);
-            window.location.href = `field.html?fieldId=${fieldId}&sessionId=${sessionId}`;
-        });
-    }
+    });
+    stompClient.send("/app/players/create", {}, JSON.stringify({'name': getPlayerName()}));
 }
 
 function createField() {
-    stompClient.send("/app/fields/create", {}, JSON.stringify({'name': $("#input-field-name").val()}));
+    stompClient.send("/app/fields/create", {}, JSON.stringify({'name': getFieldName()}));
 }
 
 function joinField(fieldId) {
     stompClient.send(`/app/fields/${fieldId}/join`);
 }
 
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        let r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
-connect();
 $(document).ready(function () {
-    $('#modal').modal({
-        backdrop: 'static',
-        keyboard: false
+    $("form").on('submit', function (e) {
+        e.preventDefault();
     });
+    connect();
 });

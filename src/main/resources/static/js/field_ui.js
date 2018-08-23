@@ -29,9 +29,17 @@ function isCellFree(cellId) {
     return !$(`#field-cell-${cellId}`).html();
 }
 
-function showModal(text) {
-    $(`#modal-label`).html(text);
-    $('#modal').modal({
+function showGameFinishedModal(text) {
+    $(`#modal-gf-label`).html(text);
+    $('#modal-game-finished').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+}
+
+function showErrorModal(text) {
+    $(`#modal-error .modal-body`).html(text);
+    $('#modal-error').modal({
         backdrop: 'static',
         keyboard: false
     });

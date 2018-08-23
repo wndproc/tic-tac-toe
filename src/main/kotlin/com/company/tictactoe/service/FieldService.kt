@@ -1,6 +1,9 @@
 package com.company.tictactoe.service
 
-import com.company.tictactoe.domain.*
+import com.company.tictactoe.domain.Field
+import com.company.tictactoe.domain.Player
+import com.company.tictactoe.domain.Result
+import com.company.tictactoe.domain.Side
 import org.springframework.stereotype.Service
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -9,8 +12,8 @@ class FieldService {
     private val fields = LinkedHashMap<Int, Field>()
     private val idCounter = AtomicInteger(1)
 
-    fun createField(fieldName: String, user: User): Field {
-        var field = Field(idCounter.getAndIncrement(), fieldName, user)
+    fun createField(fieldName: String, player: Player): Field {
+        var field = Field(idCounter.getAndIncrement(), fieldName, player)
         fields[field.id] = field
         return field
     }
@@ -19,21 +22,25 @@ class FieldService {
         return fields.values.toList()
     }
 
-    fun getField(fieldId : Int): Field {
-        return fields[fieldId] ?: throw NotFoundException("Field not found, fieldId: $fieldId")
+    fun getField(fieldId : Int): Field? {
+        return fields[fieldId]
     }
 
-    fun join(id: Int, user: User): Boolean {
+    fun deleteField(fieldId : Int) {
+        fields.remove(fieldId)
+    }
+
+    fun join(id: Int, player: Player): Boolean {
         val field = fields[id]
-        if (field != null && !field.players.contains(user)) {
-            field.players.add(user)
+        if (field != null && !field.players.contains(player)) {
+            field.players.add(player)
             return true
         }
         return false
     }
 
-    fun addMove(fieldId: Int, cellId: Int, side: Side, user: User): Result {
-        var field: Field = fields[fieldId] ?: throw NotFoundException("Field not found, fieldId: $fieldId")
-        return field.addMove(cellId, side, user)
+    fun addMove(fieldId: Int, cellId: Int, side: Side, player: Player): Result {
+        var field: Field = fields[fieldId] ?: throw RuntimeException("Field not found, fieldId: $fieldId")
+        return field.addMove(cellId, side, player)
     }
 }

@@ -5,8 +5,8 @@ import org.junit.Before
 import org.junit.Test
 
 class FieldTest {
-    private val firstPlayer: User = User(1, "sessionId_1", "userName_1")
-    private val secondPlayer: User = User(2, "sessionId_2", "userName_2")
+    private val firstPlayer: Player = Player(1, "sessionId_1", "userName_1")
+    private val secondPlayer: Player = Player(2, "sessionId_2", "userName_2")
     private var field: Field = createField()
     private var firstPlayerTurn: Boolean = false
 
@@ -33,7 +33,7 @@ class FieldTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun userIsNotInPlayers() {
-        field.addMove(0, Side.X, User(3, "sessionId_3", "userName_3"))
+        field.addMove(0, Side.X, Player(3, "sessionId_3", "userName_3"))
     }
 
     @Test(expected = IllegalArgumentException::class)

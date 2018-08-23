@@ -7,27 +7,27 @@ import java.time.LocalDateTime
 class Field(
         val id: Int,
         val name: String,
-        val owner: User,
-        val players: MutableSet<User> = HashSet(),
+        val creator: Player,
+        val players: MutableSet<Player> = HashSet(),
         val cells: Array<Array<Side?>> = Array(FIELD_SIZE) { Array<Side?>(FIELD_SIZE) { null } },
-        var moveCount: Int = 0,
+        var movesCount: Int = 0,
         var lastMoveTime: LocalDateTime? = null,
-        var lastMoveUserId: Int? = null
+        var lastPlayerId: Int? = null
 ) {
     init {
-        players.add(owner)
+        players.add(creator)
     }
 
     @Synchronized
-    fun addMove(cellId: Int, side: Side, user : User): Result {
+    fun addMove(cellId: Int, side: Side, player : Player): Result {
         if (cellId !in 0..(FIELD_SIZE * FIELD_SIZE - 1)) {
             throw IllegalArgumentException("Wrong cellId: $cellId")
         }
-        if (!players.contains(user)) {
-            throw IllegalArgumentException("Player is not joined to field, userId: ${user.id}")
+        if (!players.contains(player)) {
+            throw IllegalArgumentException("Player is not joined to the field, fieldId: ${id}, playerId: ${player.id}")
         }
-        if (user.id == lastMoveUserId) {
-            throw IllegalArgumentException("Player is trying to make multiple moves, userId: ${user.id}")
+        if (player.id == lastPlayerId) {
+            throw IllegalArgumentException("Player is trying to make multiple moves, playerId: ${player.id}")
         }
         val row = cellId / FIELD_SIZE
         val col = cellId % FIELD_SIZE
@@ -36,8 +36,8 @@ class Field(
         }
         cells[row][col] = side
         lastMoveTime = LocalDateTime.now()
-        lastMoveUserId = user.id
-        moveCount++
+        lastPlayerId = player.id
+        movesCount++
 
         if (
                 //check row
@@ -66,7 +66,7 @@ class Field(
                 )
         ) return Result.WIN
 
-        if (moveCount == FIELD_SIZE * FIELD_SIZE) {
+        if (movesCount == FIELD_SIZE * FIELD_SIZE) {
             return Result.DRAW
         }
 

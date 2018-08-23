@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UFT-8">
     <title>Tic tac toe</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
     <link href="css/common.css" rel="stylesheet"/>
-    <script src="webjars/jquery/jquery.min.js"></script>
-    <script src="webjars/sockjs-client/sockjs.min.js"></script>
-    <script src="webjars/stomp-websocket/stomp.min.js"></script>
-    <script src="webjars/bootstrap/js/bootstrap.bundle.js"></script>
-    <script src="js/main.js"></script>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.bundle.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/main_ui.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
 <div id="navbar" class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
@@ -19,13 +22,13 @@
 </div>
 <div class="container">
     <div class="row mb-3">
-        <form class="col-md-12 needs-validation">
+        <form class="col-md-12 needs-validation" onsubmit="createField()">
             <div class="form-row align-items-center">
                 <div class="col-md-2 my-1">
                     <input type="text" class="form-control" id="input-field-name" placeholder="Field name" required>
                 </div>
                 <div class="col-auto my-1">
-                    <button class="btn btn-primary" type="submit" onsubmit="createField()">Create field</button>
+                    <button class="btn btn-primary" type="submit">Create field</button>
                 </div>
             </div>
         </form>
@@ -46,11 +49,10 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div id="modal-create-player" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <form class="needs-validation" onsubmit="joinGame()">
+                <form class="needs-validation" onsubmit="createPlayer()">
                     <div id="modal-header" class="modal-header">
                         <h5 class="modal-title text-center">Enter your name</h5>
                     </div>
@@ -69,10 +71,28 @@
         </div>
     </div>
 
+    <div id="modal-error" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error!</h5>
+                </div>
+                <div class="modal-body">
+                    Oops! Something went wrong. Try to reload page.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="window.location.replace('index.html')">
+                        Reload page
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer id="footer">
         <div class="row">
             <div class="col-md-12">
-                <p class="footer-p">Made by Arseniy Merzlyakov especially for JetBrains. 2018</p>
+                <p class="footer-p">Created by Arseniy Merzlyakov especially for JetBrains. 2018</p>
             </div>
         </div>
     </footer>
