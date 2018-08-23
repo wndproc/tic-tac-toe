@@ -6,7 +6,7 @@ let player;
 function getSessionId() {
     let savedSessionId = sessionStorage.getItem("sessionId");
     if (savedSessionId) {
-       return savedSessionId;
+        return savedSessionId;
     }
     let uuid = uuidv4();
     sessionStorage.setItem("sessionId", uuid);
@@ -45,6 +45,7 @@ function onConnect() {
             })
         }
     });
+
     stompClient.subscribe('/topic/fields', function (message) {
         let field = getMessagePayload(message);
         if (field) {
@@ -55,10 +56,11 @@ function onConnect() {
             }
         }
     });
+
     stompClient.subscribe('/topic/fields/delete', function (message) {
         let field = getMessagePayload(message);
         if (field) {
-           deleteField(field.id)
+            deleteField(field.id)
         }
     });
 }

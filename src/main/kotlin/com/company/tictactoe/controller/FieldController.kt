@@ -17,9 +17,9 @@ import java.time.LocalDateTime
 
 @Controller
 class FieldController {
-    val fieldService: FieldService
-    val playersService: PlayersService
-    val messagingTemplate: SimpMessagingTemplate
+    private val fieldService: FieldService
+    private val playersService: PlayersService
+    private val messagingTemplate: SimpMessagingTemplate
 
     @Autowired
     constructor(fieldService: FieldService, playersService: PlayersService, messagingTemplate: SimpMessagingTemplate) {
@@ -56,7 +56,7 @@ class FieldController {
             @DestinationVariable fieldId: Int,
             @Header("simpSessionId") sessionId: String
     ): Message<FieldInfoTo> {
-        var player = playersService.findPlayer(sessionId)
+        val player = playersService.findPlayer(sessionId)
         if (player != null) {
             val field = fieldService.getField(fieldId)
             if (field != null) {
@@ -74,7 +74,7 @@ class FieldController {
 
     @SubscribeMapping("/fields/{fieldId}")
     fun getField(@DestinationVariable fieldId: Int): Message<FieldCellsTo> {
-        var field = fieldService.getField(fieldId)
+        val field = fieldService.getField(fieldId)
         return if (field != null) Message(FieldCellsTo(field)) else Message()
     }
 
@@ -85,8 +85,8 @@ class FieldController {
             @DestinationVariable fieldId: Int,
             @Header("simpSessionId") sessionId: String
     ): Message<MoveTo> {
-        var player = playersService.findPlayer(sessionId)!!
-        var result = fieldService.addMove(fieldId, move.cellId, move.side, player)
+        val player = playersService.findPlayer(sessionId)!!
+        val result = fieldService.addMove(fieldId, move.cellId, move.side, player)
         messagingTemplate.convertAndSend(
                 "/topic/fields",
                 Message(FieldInfoTo(fieldId, lastMoveTime = LocalDateTime.now()))

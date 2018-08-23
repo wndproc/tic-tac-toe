@@ -86,17 +86,17 @@ function getSessionId() {
     return null;
 }
 
-$(document).ready(function () {
-    chooseRandomSide();
-    createField();
-    connect();
-});
-
 $(window).bind(
     "beforeunload",
-    function() {
+    function () {
         if (!gameFinished) {
             stompClient.send(`/app/fields/${fieldId}/leave`, {}, {});
         }
     }
 );
+
+$(document).ready(function () {
+    chooseRandomSide();
+    createField();
+    connect();
+});

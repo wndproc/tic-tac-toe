@@ -119,7 +119,7 @@ class FieldTest {
     }
 
     private fun createField(): Field {
-        var field = Field(1, "fieldName", firstPlayer)
+        val field = Field(1, "fieldName", firstPlayer)
         field.players.add(secondPlayer)
         return field
     }

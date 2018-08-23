@@ -23,12 +23,12 @@ class PlayersController {
     @MessageMapping("/players/create")
     @SendToUser("/queue/player")
     fun createPlayer(player: PlayerTo, @Header("simpSessionId") sessionId: String): Message<PlayerTo> {
-        return Message(PlayerTo(playersService.createPlayer(sessionId, player.name!!)))
+        return Message(PlayerTo(playersService.createPlayer(sessionId, player.name)))
     }
 
     @SubscribeMapping("/players/{sessionId}")
     fun getPlayer(@DestinationVariable sessionId: String): Message<PlayerTo> {
-        var player = playersService.findPlayer(sessionId)
+        val player = playersService.findPlayer(sessionId)
         return if (player != null) Message(PlayerTo(player)) else Message()
     }
 }

@@ -14,7 +14,7 @@ class FieldService {
     private val idCounter = AtomicInteger(1)
 
     fun createField(fieldName: String, player: Player): Field {
-        var field = Field(idCounter.getAndIncrement(), fieldName, player)
+        val field = Field(idCounter.getAndIncrement(), fieldName, player)
         fields[field.id] = field
         return field
     }
@@ -41,7 +41,7 @@ class FieldService {
     }
 
     fun addMove(fieldId: Int, cellId: Int, side: Side, player: Player): Result {
-        var field: Field = fields[fieldId] ?: throw RuntimeException("Field not found, fieldId: $fieldId")
+        val field: Field = fields[fieldId] ?: throw RuntimeException("Field not found, fieldId: $fieldId")
         return field.addMove(cellId, side, player)
     }
 }

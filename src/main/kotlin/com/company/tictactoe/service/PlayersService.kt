@@ -11,7 +11,7 @@ class PlayersService {
     private val idCounter = AtomicInteger(1)
 
     fun createPlayer(sessionId: String, name: String): Player {
-        var player = Player(idCounter.getAndIncrement(), sessionId, name)
+        val player = Player(idCounter.getAndIncrement(), sessionId, name)
         if (players.putIfAbsent(sessionId, player) != null) {
             throw IllegalArgumentException("Player already created, sessionId $sessionId")
         }

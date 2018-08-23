@@ -11,9 +11,9 @@ class Field(
         val creator: Player,
         val players: MutableSet<Player> = ConcurrentHashMap.newKeySet(),
         val cells: Array<Array<Side?>> = Array(FIELD_SIZE) { Array<Side?>(FIELD_SIZE) { null } },
-        var movesCount: Int = 0,
         var lastMoveTime: LocalDateTime? = null,
-        var lastPlayerId: Int? = null
+        var lastPlayerId: Int? = null,
+        private var movesCount: Int = 0
 ) {
     init {
         players.add(creator)
@@ -25,7 +25,7 @@ class Field(
             throw IllegalArgumentException("Wrong cellId: $cellId")
         }
         if (!players.contains(player)) {
-            throw IllegalArgumentException("Player is not joined to the field, fieldId: ${id}, playerId: ${player.id}")
+            throw IllegalArgumentException("Player is not joined to the field, fieldId: $id, playerId: ${player.id}")
         }
         if (player.id == lastPlayerId) {
             throw IllegalArgumentException("Player is trying to make multiple moves, playerId: ${player.id}")
